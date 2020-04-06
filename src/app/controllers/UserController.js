@@ -1,13 +1,14 @@
 import * as Yup from 'yup';
 import User from '../models/User';
 
-//const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       nickname: Yup.string(),
+      phone: Yup.lazy(phone => !phone ? Yup.string(): Yup.string().matches(phoneRegExp)),
       email: Yup.string()
         .email()
         .required(),
@@ -17,12 +18,12 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body)))
-      return res.status(500).json({ error: 'Validation fails' });
+      return res.status(500).json({ error: 'Data validation failed' });
 
     const userExists = await User.findOne({ where: { email: req.body.email } });
 
     if (userExists) {
-      return res.status(400).json({ erro: 'Usuário já existe' });
+      return res.status(400).json({ erro: 'User already exists' });
     }
 
     if(!req.body.nickname || !req.body.phone){
@@ -58,7 +59,7 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body)))
-      return res.status(500).json({ error: 'Validation fails' });
+      return res.status(500).json({ error: 'Data validation failed' });
 
     try {
       const { email, oldPassword } = req.body;
@@ -70,7 +71,7 @@ class UserController {
         });
 
         if (userExists)
-          return res.status(500).json({ erro: 'Usuário já existe' });
+          return res.status(500).json({ erro: 'User already exists' });
       }
 
       if (req.body.password && !(await user.checkPassword(oldPassword)))
@@ -89,6 +90,14 @@ class UserController {
     } catch (error) {
       return res.status(500).json({ error: 'Update user' });
     }
+  }
+
+  async index(req, res) {
+    const userList = await User.findAll();
+
+    if(userList) return res.json({ userList });
+
+    return res.json({ message: "No registered users" });
   }
 }
 
