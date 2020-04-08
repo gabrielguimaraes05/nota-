@@ -109,3 +109,7 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .pnp.*
+
+# dotenv environment variables file
+.env
+.env.test
