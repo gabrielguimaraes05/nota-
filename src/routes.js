@@ -19,5 +19,7 @@ routes.put('/users', userController.update);
 routes.get('/users', userController.index);
 
 routes.post('/orders', orderController.store);
+routes.put('/orders/:orderId', orderController.update);
+routes.delete('/orders/:orderId', orderController.delete);
 
 export default routes;
