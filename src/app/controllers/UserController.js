@@ -32,13 +32,16 @@ class UserController {
       req.body.phone = user.phone;
     }
 
-    const { name, nickname, phone ,email, contractor, } = await User.create(req.body);
+    const { name, nickname, phone ,email, contractor, area_interest , education_level } = await User.create(req.body);
     return res.json({
       name,
       nickname,
       phone,
       email,
       contractor,
+      area_interest,
+      education_level,
+
     });
   }
 

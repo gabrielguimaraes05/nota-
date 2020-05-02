@@ -1,8 +1,10 @@
 import express from 'express';
-import cors from 'cors';
+import morgan from 'morgan';
+//import cors from 'cors';
 import routes from './routes';
+import { resolve } from 'path';
 
-import './database';
+import './database/index';
 
 class AppController {
   constructor() {
@@ -13,8 +15,11 @@ class AppController {
   }
 
   middlewares() {
-    this.server.use(cors());
+    //this.server.use(cors());
     this.server.use(express.json());
+    this.server.use(express.urlencoded({ extended: true }));
+    this.server.use(morgan("dev"));
+    this.server.use("/files", express.static(resolve(__dirname, "..", "tmp", "uploads")));
   }
 
   routes() {
