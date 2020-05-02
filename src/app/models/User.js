@@ -12,6 +12,8 @@ class User extends Model {
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         contractor: Sequelize.BOOLEAN,
+        area_interest: Sequelize.INTEGER,
+        education_level: Sequelize.INTEGER,
       },
       {
         sequelize,
@@ -23,6 +25,10 @@ class User extends Model {
       }
     });
     return this;
+  }
+
+  static associate(models) {
+    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
   }
 
   checkPassword(password) {
