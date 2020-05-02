@@ -7,6 +7,7 @@ import authMiddleware from './app/middlewares/auth';
 import userController from './app/controllers/UserController';
 import sessionController from './app/controllers/SessionController';
 import fileController from './app/controllers/FileController';
+import orderController from './app/controllers/OrderController';
 
 const routes = new Router();
 const file = multer(multerConfig);
@@ -24,5 +25,9 @@ routes.get('/users', userController.index);
 routes.post('/files', file.single('file'), fileController.store);
 routes.delete('/files/:id', fileController.delete);
 
+
+routes.post('/orders', orderController.store);
+routes.put('/orders/:orderId', orderController.update);
+routes.delete('/orders/:orderId', orderController.delete);
 
 export default routes;

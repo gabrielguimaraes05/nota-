@@ -7,6 +7,11 @@ import File from '../app/models/File';
 import databaseConfig from '../config/database';
 
 const models = [User, File];
+import Order from '../app/models/Order';
+
+import databaseConfig from '../config/database';
+
+const models = [User, Order];
 
 class Database {
   constructor() {
@@ -18,7 +23,7 @@ class Database {
 
     try {
       await this.connection.authenticate();
-      console.log( '[src/database/index]' + ' Connection has been established successfully.');
+      console.log('[src/database/index]' + ' Connection has been established successfully.');
     } catch (error) {
       console.error('[src/database/index]' + ' Unable to connect to the database:', error);
     }
