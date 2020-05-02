@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import Sequelize from 'sequelize';
 import User from '../app/models/User';
+import Order from '../app/models/Order';
 
 import databaseConfig from '../config/database';
 
-const models = [User];
+const models = [User, Order];
 
 class Database {
   constructor() {
@@ -16,12 +17,14 @@ class Database {
 
     try {
       await this.connection.authenticate();
-      console.log( '[src/database/index]' + ' Connection has been established successfully.');
+      console.log('[src/database/index]' + ' Connection has been established successfully.');
     } catch (error) {
       console.error('[src/database/index]' + ' Unable to connect to the database:', error);
     }
 
-    models.map(model => model.init(this.connection));
+    models
+      .map(model => model.init(this.connection))
+      .map(model => model.associate && model.associate(this.connection.models));
   }
 }
 
