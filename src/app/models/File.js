@@ -1,5 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
-import fs from'fs';
+import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
@@ -20,27 +20,30 @@ class File extends Model {
       },
       {
         sequelize,
-      }
+      },
     );
-    this.addHook('beforeSave', async file => {
+    this.addHook('beforeSave', async (file) => {
       if (!file.url) {
         file.url = `${process.env.APP_URL}/files/${file.path}`;
       }
     });
-    this.addHook('beforeDestroy', file => {
-      if(process.env.STORAGE_TYPE === 's3') {
+    this.addHook('beforeDestroy', (file) => {
+      if (process.env.STORAGE_TYPE === 's3') {
         return s3.deleteObject({
           Bucket: 'notamais',
           Key: file.path,
-        }).promise()
-      } else {
-        console.log("Teste0" + file.path);
-        return promisify(fs.unlink) (
-          path.resolve(__dirname, "..", "..", "..", "tmp", "uploads", file.path)
-        );
+        }).promise();
       }
+      console.log(`Teste0${file.path}`);
+      return promisify(fs.unlink)(
+        path.resolve(__dirname, '..', '..', '..', 'tmp', 'uploads', file.path),
+      );
     });
     return this;
+  }
+
+  static associate(models) {
+    this.belongsTo(models.Order, { foreignKey: 'order_id' });
   }
 }
 

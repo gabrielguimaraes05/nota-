@@ -1,14 +1,14 @@
 import * as Yup from 'yup';
 import User from '../models/User';
 
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       nickname: Yup.string(),
-      phone: Yup.lazy(phone => !phone ? Yup.string(): Yup.string().matches(phoneRegExp)),
+      phone: Yup.lazy((phone) => (!phone ? Yup.string() : Yup.string().matches(phoneRegExp))),
       email: Yup.string()
         .email()
         .required(),
@@ -17,8 +17,7 @@ class UserController {
         .min(6),
     });
 
-    if (!(await schema.isValid(req.body)))
-      return res.status(500).json({ error: 'Data validation failed' });
+    if (!(await schema.isValid(req.body))) { return res.status(400).json({ error: 'Data validation failed' }); }
 
     const userExists = await User.findOne({ where: { email: req.body.email } });
 
@@ -26,13 +25,16 @@ class UserController {
       return res.status(400).json({ erro: 'User already exists' });
     }
 
-    if(!req.body.nickname || !req.body.phone){
+    if (!req.body.nickname || !req.body.phone) {
+      // eslint-disable-next-line no-use-before-define
       const user = defaultnull(req.body);
       req.body.nickname = user.nickname;
       req.body.phone = user.phone;
     }
 
-    const { name, nickname, phone ,email, contractor, area_interest , education_level } = await User.create(req.body);
+    const {
+      name, nickname, phone, email, contractor, area_interest, education_level,
+    } = await User.create(req.body);
     return res.json({
       name,
       nickname,
@@ -53,16 +55,11 @@ class UserController {
       phone: Yup.string(),
       password: Yup.string()
         .min(6)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
-        ),
-      confirmPassword: Yup.string().when('password', (password, field) =>
-        password ? field.required().oneOf([Yup.ref('password')]) : field
-      ),
+        .when('oldPassword', (oldPassword, field) => (oldPassword ? field.required() : field)),
+      confirmPassword: Yup.string().when('password', (password, field) => (password ? field.required().oneOf([Yup.ref('password')]) : field)),
     });
 
-    if (!(await schema.isValid(req.body)))
-      return res.status(500).json({ error: 'Data validation failed' });
+    if (!(await schema.isValid(req.body))) { return res.status(500).json({ error: 'Data validation failed' }); }
 
     try {
       const { email, oldPassword } = req.body;
@@ -73,14 +70,14 @@ class UserController {
           where: { email: req.body.email },
         });
 
-        if (userExists)
-          return res.status(500).json({ erro: 'User already exists' });
+        if (userExists) { return res.status(500).json({ erro: 'User already exists' }); }
       }
 
-      if (req.body.password && !(await user.checkPassword(oldPassword)))
-        return res.status(500).json({ error: 'Password does not match' });
+      if (req.body.password && !(await user.checkPassword(oldPassword))) { return res.status(500).json({ error: 'Password does not match' }); }
 
-      const { id, name, nickname, phone, contractor } = await user.update(req.body);
+      const {
+        id, name, nickname, phone, contractor,
+      } = await user.update(req.body);
 
       return res.json({
         id,
@@ -98,17 +95,17 @@ class UserController {
   async index(req, res) {
     const userList = await User.findAll();
 
-    if(userList) return res.json({ userList });
+    if (userList) return res.json({ userList });
 
-    return res.json({ message: "No registered users" });
+    return res.json({ message: 'No registered users' });
   }
 }
 
 export default new UserController();
 
 function defaultnull(user) {
-  if(!user.nickname) user.nickname = null;
-  if(!user.phone) user.phone = null;
+  if (!user.nickname) user.nickname = null;
+  if (!user.phone) user.phone = null;
 
   return user;
 }

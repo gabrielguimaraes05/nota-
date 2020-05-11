@@ -1,9 +1,9 @@
 import express from 'express';
 import morgan from 'morgan';
-//import cors from 'cors';
-import routes from './routes';
+import cors from 'cors';
 import { resolve } from 'path';
-
+import bodyParser from 'body-parser';
+import routes from './routes';
 import './database/index';
 
 class AppController {
@@ -15,11 +15,12 @@ class AppController {
   }
 
   middlewares() {
-    //this.server.use(cors());
+    this.server.use(cors());
     this.server.use(express.json());
     this.server.use(express.urlencoded({ extended: true }));
-    this.server.use(morgan("dev"));
-    this.server.use("/files", express.static(resolve(__dirname, "..", "tmp", "uploads")));
+    this.server.use(morgan('dev'));
+    this.server.use('/files', express.static(resolve(__dirname, '..', 'tmp', 'uploads')));
+    this.server.use(bodyParser.urlencoded({ extended: false }));
   }
 
   routes() {

@@ -22,6 +22,7 @@ routes.post('/sessions', sessionController.store);
 routes.use(authMiddleware);
 routes.put('/users', userController.update);
 routes.get('/users', userController.index);
+
 routes.post('/files', file.single('file'), fileController.store);
 routes.delete('/files/:id', fileController.delete);
 
@@ -29,5 +30,7 @@ routes.delete('/files/:id', fileController.delete);
 routes.post('/orders', orderController.store);
 routes.put('/orders/:orderId', orderController.update);
 routes.delete('/orders/:orderId', orderController.delete);
+routes.get('/orders/:userId', orderController.index);
+// routes.get('/orders', orderController.show);
 
 export default routes;
