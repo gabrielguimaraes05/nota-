@@ -93,9 +93,9 @@ class UserController {
   }
 
   async index(req, res) {
-    const userList = await User.findAll();
+    const user = await User.findByPk(req.userId);
 
-    if (userList) return res.json({ userList });
+    if (user) return res.json({ user });
 
     return res.json({ message: 'No registered users' });
   }

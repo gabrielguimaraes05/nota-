@@ -20,14 +20,14 @@ class Database {
 
     try {
       await this.connection.authenticate();
-      console.log('[src/database/index]' + ' Connection has been established successfully.');
+      console.log('[src/database/index] Connection has been established successfully.');
     } catch (error) {
-      console.error('[src/database/index]' + ' Unable to connect to the database:', error);
+      console.error('[src/database/index] Unable to connect to the database:', error);
     }
 
     models
-      .map(model => model.init(this.connection))
-      .map(model => model.associate && model.associate(this.connection.models));
+      .map((model) => model.init(this.connection))
+      .map((model) => model.associate && model.associate(this.connection.models));
   }
 }
 

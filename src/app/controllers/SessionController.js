@@ -13,8 +13,7 @@ class SessionControllers {
       password: Yup.string().required(),
     });
 
-    if (!(await schema.isValid(req.body)))
-      return res.status(401).json({ error: 'Validation fails' });
+    if (!(await schema.isValid(req.body))) { return res.status(401).json({ error: 'Validation fails' }); }
 
     const { email, password } = req.body;
 
@@ -22,16 +21,16 @@ class SessionControllers {
 
     if (!user) return res.status(401).json({ error: 'User not found' });
 
-    if (!user.checkPassword(password))
-      return res.status(401).json({ error: 'Password does not match' });
+    if (!user.checkPassword(password)) { return res.status(401).json({ error: 'Password does not match' }); }
 
-    const { id, name } = user;
+    const { id, name, contractor } = user;
 
     return res.json({
       user: {
         id,
         name,
         email,
+        contractor,
       },
       token: jwt.sign({ id }, authConfig.secret, {
         expiresIn: authConfig.expiresIn,

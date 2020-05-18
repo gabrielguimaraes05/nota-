@@ -34,6 +34,7 @@ class File extends Model {
           Key: file.path,
         }).promise();
       }
+      // eslint-disable-next-line no-console
       console.log(`Teste0${file.path}`);
       return promisify(fs.unlink)(
         path.resolve(__dirname, '..', '..', '..', 'tmp', 'uploads', file.path),
