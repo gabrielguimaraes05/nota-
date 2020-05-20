@@ -35,5 +35,6 @@ routes.get('/orders/:userId', orderController.index);
 // routes.get('/orders', orderController.show);
 
 routes.post('/offers', offerController.store);
+routes.get('/offers/:orderId', offerController.index);
 
 export default routes;
