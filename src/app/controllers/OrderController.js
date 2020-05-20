@@ -1,4 +1,5 @@
-import { Op } from 'sequelize';
+/* eslint-disable no-use-before-define */
+// import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import Order from '../models/Order';
 
