@@ -9,6 +9,7 @@ class Order extends Model {
         education_level: Sequelize.INTEGER,
         study_area: Sequelize.INTEGER,
         due_date: Sequelize.DATE,
+        status: Sequelize.INTEGER,
       },
       {
         sequelize,

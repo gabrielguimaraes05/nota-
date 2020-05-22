@@ -36,6 +36,6 @@
     "dev": "nodemon src/server.js",
     "start": "node -r sucrase/register src/server.js",
     "dev:debug": "nodemon --inspect src/server.js",
-    "debug": "node --inspect-brk -r sucrase/register src/server.js"
+    "debug": "nodemon --inspect-brk -r sucrase/register src/server.js"
   }
 }
