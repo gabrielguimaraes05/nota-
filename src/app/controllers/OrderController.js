@@ -117,7 +117,7 @@ class OrderController {
     return res.send();
   }
 
-  async index(req, res) {
+  /* async index(req, res) {
     const { userId } = req.params;
 
     const orders = (await Order.findAll({
@@ -125,13 +125,13 @@ class OrderController {
     }));
 
     return res.send(orders);
-  }
+  } */
 
   async findOne(req, res) {
-    const { id } = req.params;
+    const { orderId } = req.params;
 
-    const order = await Order.findByPk({
-      where: { id },
+    const order = await Order.findOne({
+      where: { id: orderId },
     });
 
     if (order) return res.json(order);
