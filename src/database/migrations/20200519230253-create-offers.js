@@ -1,33 +1,27 @@
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('orders', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('offers', {
     id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
-    subject: {
-      type: Sequelize.STRING,
+    value: {
+      type: Sequelize.DOUBLE,
       allowNull: false,
     },
     description: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
-    education_level: {
+    order_id: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      references: { model: 'orders', key: 'id' },
+      onUpdate: 'CASCADE',
+      onDelete: 'SET NULL',
+      allowNull: true,
     },
-    study_area: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    due_date: {
-      type: Sequelize.DATE,
-      allowNull: false,
-    },
-    user_id: {
+    provider_id: {
       type: Sequelize.INTEGER,
       references: { model: 'users', key: 'id' },
       onUpdate: 'CASCADE',

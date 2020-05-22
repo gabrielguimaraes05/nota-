@@ -8,6 +8,7 @@ import userController from './app/controllers/UserController';
 import sessionController from './app/controllers/SessionController';
 import fileController from './app/controllers/FileController';
 import orderController from './app/controllers/OrderController';
+import offerController from './app/controllers/OfferController';
 
 const routes = new Router();
 const file = multer(multerConfig);
@@ -33,5 +34,8 @@ routes.delete('/orders/:orderId', orderController.delete);
 routes.get('/orders/:userId', orderController.index);
 routes.get('/orders/:id', orderController.findOne);
 routes.get('/orders', orderController.show);
+
+routes.post('/offers', offerController.store);
+routes.get('/offers/:orderId', offerController.index);
 
 export default routes;
