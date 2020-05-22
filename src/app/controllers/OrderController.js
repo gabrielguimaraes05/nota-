@@ -1,6 +1,6 @@
-import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import Order from '../models/Order';
+import User from '../models/User';
 
 class OrderController {
   async store(req, res) {
@@ -20,6 +20,7 @@ class OrderController {
       subject, description, educationLevel, studyArea, dueDate,
     } = req.body;
 
+    // eslint-disable-next-line no-use-before-define
     if (!isValidDate(dueDate)) { return res.status(400).json({ error: 'Due date is invalid' }); }
 
     const due_date = Date.parse(dueDate);
@@ -31,6 +32,7 @@ class OrderController {
       study_area: studyArea,
       due_date,
       user_id: userId,
+      status: 1,
     });
 
     return res.json(order);
@@ -43,14 +45,18 @@ class OrderController {
       educationLevel: Yup.number(),
       studyArea: Yup.number(),
       dueDate: Yup.string(),
+      status: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Data validation failed' });
     }
 
-    if (!isValidDate(req.body.dueDate)) {
-      return res.status(400).json({ error: 'Due date is invalid' });
+    if (req.body.dueDate) {
+      // eslint-disable-next-line no-use-before-define
+      if (!isValidDate(req.body.dueDate)) {
+        return res.status(400).json({ error: 'Due date is invalid' });
+      }
     }
 
     const { orderId } = req.params;
@@ -68,7 +74,7 @@ class OrderController {
     }
 
     const {
-      subject, description, educationLevel, studyArea, dueDate,
+      subject, description, educationLevel, studyArea, dueDate, status,
     } = req.body;
 
     const ret = await order.update({
@@ -77,6 +83,7 @@ class OrderController {
       education_level: educationLevel,
       study_area: studyArea,
       due_date: dueDate,
+      status,
     });
 
     return res.json({
@@ -87,6 +94,7 @@ class OrderController {
       studyArea: ret.study_area,
       dueDate: ret.due_date,
       userId: ret.user_id,
+      status: ret.status,
     });
   }
 
@@ -116,24 +124,56 @@ class OrderController {
       where: { user_id: userId },
     }));
 
-    return res.send(orders); // usuario logado
+    return res.send(orders);
   }
 
-  /* async show(req, res) {
-    const { query } = req;
-    /* const orders = await Order.findAll({
-      where: {
-        [Op.and] : [
-          { req.query.}
-        ]
+  async findOne(req, res) {
+    const { id } = req.params;
+
+    const order = await Order.findByPk({
+      where: { id },
+    });
+
+    if (order) return res.json(order);
+
+    return res.status(400).json({ error: 'Order does not exist' });
+  }
+
+  async show(req, res) {
+    const { contractor } = await User.findByPk(req.userId);
+
+    const whereOrder = {};
+
+    if (contractor) whereOrder.user_id = req.userId;
+
+    if (req.query.dueDate) {
+      // eslint-disable-next-line no-use-before-define
+      if (!isValidDate(req.query.dueDate)) {
+        return res.status(400).json({ error: 'Due date is invalid' });
       }
-    })
-    return res.json(query);
-  } */
+
+      whereOrder.due_date = req.query.dueDate;
+    }
+
+    if (req.query.studyArea) whereOrder.study_area = req.query.studyArea;
+
+    if (req.query.educationLevel) whereOrder.education_level = req.query.educationLevel;
+
+    if (req.query.status) whereOrder.status = req.query.status;
+
+    // eslint-disable-next-line no-use-before-define
+    if (await isEmpty(whereOrder)) return res.send();
+
+    const orders = await Order.findAll({
+      where: whereOrder,
+    });
+
+    return res.json(orders);
+  }
 }
 
-export default new OrderController();
 
+export default new OrderController();
 
 function isValidDate(dateString) {
   const regEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -142,4 +182,12 @@ function isValidDate(dateString) {
   const dNum = d.getTime();
   if (!dNum && dNum !== 0) return false; // NaN value, Invalid date
   return d.toISOString().slice(0, 10) === dateString;
+}
+function isEmpty(obj) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const prop in obj) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (obj.hasOwnProperty(prop)) { return false; }
+  }
+  return true;
 }

@@ -59,7 +59,7 @@ class UserController {
       confirmPassword: Yup.string().when('password', (password, field) => (password ? field.required().oneOf([Yup.ref('password')]) : field)),
     });
 
-    if (!(await schema.isValid(req.body))) { return res.status(500).json({ error: 'Data validation failed' }); }
+    if (!(await schema.isValid(req.body))) { return res.status(400).json({ error: 'Data validation failed' }); }
 
     try {
       const { email, oldPassword } = req.body;
@@ -70,10 +70,10 @@ class UserController {
           where: { email: req.body.email },
         });
 
-        if (userExists) { return res.status(500).json({ erro: 'User already exists' }); }
+        if (userExists) { return res.status(400).json({ erro: 'User already exists' }); }
       }
 
-      if (req.body.password && !(await user.checkPassword(oldPassword))) { return res.status(500).json({ error: 'Password does not match' }); }
+      if (req.body.password && !(await user.checkPassword(oldPassword))) { return res.status(400).json({ error: 'Password does not match' }); }
 
       const {
         id, name, nickname, phone, contractor,

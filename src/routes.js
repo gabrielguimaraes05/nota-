@@ -31,6 +31,7 @@ routes.post('/orders', orderController.store);
 routes.put('/orders/:orderId', orderController.update);
 routes.delete('/orders/:orderId', orderController.delete);
 routes.get('/orders/:userId', orderController.index);
-// routes.get('/orders', orderController.show);
+routes.get('/orders/:id', orderController.findOne);
+routes.get('/orders', orderController.show);
 
 export default routes;
