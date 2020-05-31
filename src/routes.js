@@ -26,7 +26,7 @@ routes.get('/users', userController.index);
 
 routes.post('/files', file.single('file'), fileController.store);
 routes.delete('/files/:id', fileController.delete);
-
+routes.get('/files/:orderId', fileController.index);
 
 routes.post('/orders', orderController.store);
 routes.put('/orders/:orderId', orderController.update);

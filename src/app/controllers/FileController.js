@@ -36,6 +36,12 @@ class FileController {
 
     return res.send();
   }
+
+  async index(req, res) {
+    const files = await File.findAll({ where: { order_id: req.params.orderId } });
+
+    return res.json(files);
+  }
 }
 
 export default new FileController();
