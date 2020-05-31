@@ -162,7 +162,7 @@ class OrderController {
     if (req.query.status) whereOrder.status = req.query.status;
 
     // eslint-disable-next-line no-use-before-define
-    if (await isEmpty(whereOrder)) return res.send();
+    // if (await isEmpty(whereOrder)) return res.send();
 
     const orders = await Order.findAll({
       where: whereOrder,
