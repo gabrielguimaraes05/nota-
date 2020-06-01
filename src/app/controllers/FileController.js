@@ -8,11 +8,11 @@ class FileController {
       originalname: name, key: path, size, location: url = '',
     } = req.file;
 
-    let orderId = null;
+    let order_id = null;
 
     if (req.body.orderId) {
-      orderId = req.body.orderId;
-      const order = await Order.findOne({ where: { id: orderId } });
+      order_id = req.body.orderId;
+      const order = await Order.findOne({ where: { id: order_id } });
 
       if (!order) {
         return res.status(400).json({ error: 'Order does not exists' });
@@ -24,7 +24,7 @@ class FileController {
       path,
       size,
       url,
-      orderId,
+      order_id,
     });
 
     if (!file.order_id) {
