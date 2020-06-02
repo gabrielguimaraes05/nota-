@@ -140,22 +140,9 @@ class OrderController {
       where: { order_id: orderId },
     });
 
-    const {
-      id, subject, description, education_level: educationLevel,
-      study_area: studyArea, user_id: userId, status,
-    } = order;
-
     if (order) {
       return res.json({
-        order: {
-          id,
-          subject,
-          description,
-          educationLevel,
-          studyArea,
-          userId,
-          status,
-        },
+        order,
         orderFiles,
       });
     }
