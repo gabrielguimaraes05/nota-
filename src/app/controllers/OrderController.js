@@ -46,6 +46,7 @@ class OrderController {
       studyArea: Yup.number(),
       dueDate: Yup.string(),
       status: Yup.number(),
+      selectedOffer: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -74,7 +75,7 @@ class OrderController {
     }
 
     const {
-      subject, description, educationLevel, studyArea, dueDate, status,
+      subject, description, educationLevel, studyArea, dueDate, status, selectedOffer,
     } = req.body;
 
     const ret = await order.update({
@@ -84,6 +85,7 @@ class OrderController {
       study_area: studyArea,
       due_date: dueDate,
       status,
+      selected_offer_id: selectedOffer,
     });
 
     return res.json({
@@ -95,6 +97,7 @@ class OrderController {
       dueDate: ret.due_date,
       userId: ret.user_id,
       status: ret.status,
+      selected_offer_id: ret.selected_offer,
     });
   }
 
