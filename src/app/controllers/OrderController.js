@@ -3,6 +3,7 @@ import Sequelize from 'sequelize';
 import Order from '../models/Order';
 import User from '../models/User';
 import File from '../models/File';
+import Offer from '../models/Offer';
 
 class OrderController {
   async store(req, res) {
@@ -183,9 +184,14 @@ class OrderController {
     // eslint-disable-next-line no-use-before-define
     if (await isEmpty(whereOrder)) {
       orders = await Order.findAll({
+        include: [{
+          model: Offer,
+          as: 'selected_offer',
+          attributes: ['id', 'value', 'description', 'provider_id'],
+        }],
         where: Sequelize.or(
           { status: [1] },
-          { user_id: [req.userId] },
+          Sequelize.literal(`"selected_offer"."provider_id" = ${req.userId}`),
         ),
       });
       return res.json(orders);
@@ -193,10 +199,14 @@ class OrderController {
 
     if (!(contractor)) {
       orders = await Order.findAll({
-        where:
-        Sequelize.and(whereOrder, Sequelize.or(
+        include: [{
+          model: Offer,
+          as: 'selected_offer',
+          attributes: ['id', 'value', 'description', 'provider_id'],
+        }],
+        where: Sequelize.and(whereOrder, Sequelize.or(
           { status: [1] },
-          { user_id: [req.userId] },
+          Sequelize.literal(`"selected_offer"."provider_id" = ${req.userId}`),
         )),
       });
       return res.json(orders);
