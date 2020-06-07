@@ -41,6 +41,9 @@ class OfferController {
       if (user_id !== req.userId) return res.status(401).json({ error: 'Request unauthorized' });
 
       offers = (await Offer.findAll({
+        attributes:{
+          exclude: ['provider_id'],
+        },
         include: [{
           model: User,
           as: 'provider',
@@ -58,7 +61,7 @@ class OfferController {
       ),
     });
 
-    return res.json(offers);  }
+    return res.json({ offers });  }
 }
 
 export default new OfferController();
