@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
+import Sequelize from 'sequelize';
 import Order from '../models/Order';
 import User from '../models/User';
+import File from '../models/File';
 
 class OrderController {
   async store(req, res) {
@@ -25,6 +27,8 @@ class OrderController {
 
     const due_date = Date.parse(dueDate);
 
+    const { name } = await User.findByPk(userId);
+
     const order = await Order.create({
       subject,
       description,
@@ -33,6 +37,7 @@ class OrderController {
       due_date,
       user_id: userId,
       status: 1,
+      name_user: name,
     });
 
     return res.json(order);
@@ -120,7 +125,7 @@ class OrderController {
     return res.send();
   }
 
-  async index(req, res) {
+  /* async index(req, res) {
     const { userId } = req.params;
 
     const orders = (await Order.findAll({
@@ -128,16 +133,25 @@ class OrderController {
     }));
 
     return res.send(orders);
-  }
+  } */
 
   async findOne(req, res) {
-    const { id } = req.params;
+    const { orderId } = req.params;
 
-    const order = await Order.findByPk({
-      where: { id },
+    const order = await Order.findOne({
+      where: { id: orderId },
     });
 
-    if (order) return res.json(order);
+    const orderFiles = await File.findAll({
+      where: { order_id: orderId },
+    });
+
+    if (order) {
+      return res.json({
+        order,
+        orderFiles,
+      });
+    }
 
     return res.status(400).json({ error: 'Order does not exist' });
   }
@@ -164,14 +178,60 @@ class OrderController {
 
     if (req.query.status) whereOrder.status = req.query.status;
 
-    // eslint-disable-next-line no-use-before-define
-    if (await isEmpty(whereOrder)) return res.send();
+    let orders;
 
-    const orders = await Order.findAll({
+    // eslint-disable-next-line no-use-before-define
+    if (await isEmpty(whereOrder)) {
+      orders = await Order.findAll({
+        where: Sequelize.or(
+          { status: [1] },
+          { user_id: [req.userId] },
+        ),
+      });
+      return res.json(orders);
+    }
+
+    if (!(contractor)) {
+      orders = await Order.findAll({
+        where:
+        Sequelize.and(whereOrder, Sequelize.or(
+          { status: [1] },
+          { user_id: [req.userId] },
+        )),
+      });
+      return res.json(orders);
+    }
+
+    orders = await Order.findAll({
+      where: Sequelize.and(whereOrder),
+    });
+    return res.json(orders);
+  }
+
+  async canBid(req, res) {
+    const order = await Order.findByPk(req.params.orderId);
+    const user = await User.findByPk(req.params.userId);
+
+
+    if (!(order && user)) {
+      return res.status(400).json({ error: 'There is no corresponding Order or User' });
+    }
+
+    let isBid = true;
+
+    const whereOrder = {};
+
+    whereOrder.user_id = req.params.userId;
+    whereOrder.id = req.params.orderId;
+
+
+    const isOrder = await Order.findOne({
       where: whereOrder,
     });
 
-    return res.json(orders);
+    if (isOrder) isBid = false;
+
+    return res.json(isBid);
   }
 }
 

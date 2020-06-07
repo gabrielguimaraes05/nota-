@@ -26,14 +26,16 @@ routes.get('/users', userController.index);
 
 routes.post('/files', file.single('file'), fileController.store);
 routes.delete('/files/:id', fileController.delete);
-routes.get('/files/:orderId', fileController.index);
+routes.get('/files/:id', fileController.index);
+
 
 routes.post('/orders', orderController.store);
 routes.put('/orders/:orderId', orderController.update);
 routes.delete('/orders/:orderId', orderController.delete);
-routes.get('/orders/:userId', orderController.index);
-routes.get('/orders/:id', orderController.findOne);
+// routes.get('/orders/:userId', orderController.index);
+routes.get('/orders/:orderId', orderController.findOne);
 routes.get('/orders', orderController.show);
+routes.get('/orders/:orderId/user/:userId', orderController.canBid);
 
 routes.post('/offers', offerController.store);
 routes.get('/offers/:orderId', offerController.index);
