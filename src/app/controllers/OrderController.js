@@ -27,6 +27,8 @@ class OrderController {
 
     const due_date = Date.parse(dueDate);
 
+    const { name } = await User.findByPk(userId);
+
     const order = await Order.create({
       subject,
       description,
@@ -35,6 +37,7 @@ class OrderController {
       due_date,
       user_id: userId,
       status: 1,
+      name_user: name,
     });
 
     return res.json(order);
