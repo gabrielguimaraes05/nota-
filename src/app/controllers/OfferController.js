@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import Sequelize from 'sequelize';
 import User from '../models/User';
 import Offer from '../models/Offer';
 import Order from '../models/Order';
@@ -30,15 +31,27 @@ class OfferController {
   }
 
   async index(req, res) {
+    let offers;
+    const { contractor } = await User.findByPk(req.userId);
     const { orderId: order_id } = req.params;
 
-    const { user_id } = await Order.findByPk(order_id);
+    if (contractor) {
+      const { user_id } = await Order.findByPk(order_id);
 
-    if (user_id !== req.userId) return res.status(401).json({ error: 'Request unauthorized' });
+      if (user_id !== req.userId) return res.status(401).json({ error: 'Request unauthorized' });
 
-    const offers = (await Offer.findAll({
-      where: { order_id },
-    }));
+      offers = (await Offer.findAll({
+        where: { order_id },
+      }));
+      return res.json({ offers });
+    }
+
+    offers = await Offer.findAll({
+      where: Sequelize.and(
+        { order_id: [req.params.orderId] },
+        { provider_id: [req.userId] },
+      ),
+    });
 
     return res.json({ offers });
   }
