@@ -76,9 +76,9 @@ class OrderController {
 
     const { userId } = req;
 
-    if (order.user_id !== userId) {
+    /* if (order.user_id !== userId) {
       return res.status(401).json({ error: 'Request unauthorized' });
-    }
+    } */
 
     const {
       subject, description, educationLevel, studyArea, dueDate, status, selectedOffer,
